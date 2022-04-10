@@ -6,25 +6,24 @@ You can download the generated SQL script from the repo's [releases page](https:
 
 If you want to modify the default community name or user name, you're going to have to run the code to generate the SQL script yourself. This is a good idea anyway since it's not wise to trust me to run arbitrary queries on your database, and in this case the easiest way to review them is to review the code that generates them.
 
-## Generating the SQL script from the release binary:
+## Screenshot
+  
+[![screenshot](https://user-images.githubusercontent.com/95945959/162605469-43d34fdf-3559-4017-81c8-486d9b280a1b.png)](https://user-images.githubusercontent.com/95945959/162605437-8cb64245-2048-4bf0-afd7-6de3a2d32a29.png)  
+(click/tap to expand)
+
+## Generating the SQL script from the release binary
 
 Prerequisites: Java 8 or above
 
 Download the jar file from the [releases page](https://github.com/rileynull/GenZhouImporter/releases) and run it:
 
 ```sh
-java -jar genZhouImporter-0.1-SNAPSHOT.jar
-```
-
-If you don't want to use the default values for the community name and user name, you can supply additional arguments on the command line:
-
-```sh
 java -jar genZhouImporter-0.1-SNAPSHOT.jar genzhouarchive archive_bot
 ```
 
-Either way, the output file `GenZhouArchive.sql` will be placed in your current working directory.
+The output file `GenZhouArchive.sql` will be placed in your current working directory.
 
-## Generating the SQL script from source:
+## Generating the SQL script from source
 
 Prerequisites: JDK >=1.8, Maven 3. 
 
@@ -32,44 +31,33 @@ Clone the repo and cd to the GenZhouImporter directory. Run:
 
 ```sh
 mvn compile
-mvn exec:java
+mvn exec:java -Dexec.args="genzhouarchive archive_bot"
 ```
 
 (This will pull down dependencies from Maven Central so you must be connected to the internet during the compile step.
 
-If you don't want to use the default values for the community name and user name, you can supply additional arguments on the command line:
+The output file `GenZhouArchive.sql` will be placed in your current working directory.
 
-```sh
-mvn compile
-mvn exec:java -Dexec.args="genzhouarchive archive_bot"
-```
-
-Either way, the output file `GenZhouArchive.sql` will be placed in your current working directory.
-
-## Running the SQL script:
+## Running the SQL script
 
 (Note that this uses the default values for the database name and database username. If you've changed them in your [Lemmy configuration](https://join-lemmy.org/docs/en/administration/configuration.html#full-config-with-default-values) then update the values accordingly.)
 
-SSH to the server running postgres and run this:
+Copy `GenZhouArchive.sql` to the server running Postgres and run this:
 
 ```sh
 psql --dbname=lemmy --username=lemmy --file=GenZhouArchive.sql
 ```
 
-It should prompt you for your database password; the default is `password`
-
-## Running the SQL script when Lemmy is running in Docker:
+## Running the SQL script with Dockerized Lemmy
 
 (Note that this uses the default values for the database name and database username. If you've changed them in your [Lemmy configuration](https://join-lemmy.org/docs/en/administration/configuration.html#full-config-with-default-values) then update the values accordingly.)
 
-SSH to the server running docker and run this to copy the SQL file into the container and run it:
+Copy `GenZhouArchive.sql` to the server running Docker and run this:
 
 ```sh
 docker cp ./GenZhouArchive.sql $(docker ps -qf name=postgres):/var/lib/postgresql
 docker exec -it $(docker ps -qf name=postgres) psql --dbname=lemmy --username=lemmy --file=/var/lib/postgresql/GenZhouArchive.sql
 ```
-
-No password is necessary because you're connecting locally through a Unix socket. It should take less than a minute to run.
 
 ## Credits
 
