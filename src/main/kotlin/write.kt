@@ -3,10 +3,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.streams.toList
 
-object Writer {
-    private const val TARGET_COMM_NAME = "genzhouarchive"
-    private const val TARGET_USER_NAME = "archive_bot"
-
+class Writer(val targetCommName: String, val targetUserName: String) {
     private fun lit(str: String?): String {
         return if (str == null) "NULL" else "'${str.replace("'", "''")}'"
     }
@@ -59,8 +56,8 @@ object Writer {
         out.append("BEGIN\n")
 
         // Set IDs for the target community and user.
-        out.append("SELECT id INTO STRICT comm_id FROM community WHERE name = '$TARGET_COMM_NAME';\n")
-        out.append("SELECT id INTO STRICT user_id FROM person WHERE name = '$TARGET_USER_NAME';\n")
+        out.append("SELECT id INTO STRICT comm_id FROM community WHERE name = '$targetCommName';\n")
+        out.append("SELECT id INTO STRICT user_id FROM person WHERE name = '$targetUserName';\n")
 
         // Insert the post.
         out.append(
@@ -91,6 +88,6 @@ object Writer {
     }
 
     operator fun invoke(post: Post, comments: List<Comment>): String {
-        return StringWriter().also { Writer(post, comments, it) }.toString()
+        return StringWriter().also { invoke(post, comments, it) }.toString()
     }
 }

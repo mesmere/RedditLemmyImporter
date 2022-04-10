@@ -25,12 +25,19 @@ data class Comment(
 )
 
 fun main(args: Array<String>) {
-    File("genZhouArchive.sql").bufferedWriter().use { output ->
+    val writer = Writer(
+        targetCommName = args.getOrElse(0) { "genzhouarchive" },
+        targetUserName = args.getOrElse(1) { "archive_bot" }
+    )
+
+    println("Running...")
+    File("GenZhouArchive.sql").bufferedWriter(Charsets.UTF_8).use { output ->
         {}.javaClass.getResource("/GenZhouArchive.json").openStream().reader().useLines { lines ->
             for (line in lines) {
                 val (post, comments) = Parser(line)
-                Writer(post, comments, output)
+                writer(post, comments, output)
             }
         }
     }
+    println("Done!")
 }
