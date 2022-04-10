@@ -3,20 +3,22 @@ import java.io.File
 import java.time.ZonedDateTime
 
 data class Post(
-    @JsonDeserialize(using = Parser.DeletedToNullDeserializer::class)
+    @JsonDeserialize(converter = Parser.DeletedToNullConverter::class)
     val author: String?,
     val created_utc: ZonedDateTime,
     val is_self: Boolean,
     val name: String,
     val score: Int,
+    @JsonDeserialize(converter = Parser.HTMLEntityDecode::class)
     val selftext: String,
     val title: String,
     val url: String,
 )
 
 data class Comment(
-    @JsonDeserialize(using = Parser.DeletedToNullDeserializer::class)
+    @JsonDeserialize(converter = Parser.DeletedToNullConverter::class)
     val author: String?,
+    @JsonDeserialize(converter = Parser.HTMLEntityDecode::class)
     val body: String,
     val created_utc: ZonedDateTime,
     val name: String,

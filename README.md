@@ -16,7 +16,7 @@ Prerequisites: Java 8 or above
 Download the jar file from the [releases page](https://github.com/rileynull/GenZhouImporter/releases) and run it:
 
 ```
-java -jar genZhouImporter-0.1-SNAPSHOT.jar genzhouarchive archive_bot
+java -jar genZhouImporter-0.2-SNAPSHOT.jar genzhouarchive archive_bot
 ```
 
 The output file `GenZhouArchive.sql` will be placed in your current working directory.

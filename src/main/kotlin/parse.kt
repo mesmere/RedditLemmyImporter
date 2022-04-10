@@ -1,19 +1,22 @@
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer
+import com.fasterxml.jackson.databind.util.StdConverter
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
+import org.apache.commons.text.StringEscapeUtils
 
 object Parser {
-    class DeletedToNullDeserializer : JsonDeserializer<String>() {
-        override fun deserialize(parser: JsonParser, ctx: DeserializationContext): String? {
-            val str = StringDeserializer.instance.deserialize(parser, ctx)
+    class DeletedToNullConverter : StdConverter<String, String>() {
+        override fun convert(str: String): String? {
             return if (str == "[deleted]") null else str
+        }
+    }
+
+    class HTMLEntityDecode : StdConverter<String, String>() {
+        override fun convert(str: String): String {
+            return StringEscapeUtils.unescapeHtml4(str)
         }
     }
 
