@@ -15,7 +15,7 @@ Prerequisites: Java 8 or above
 
 Download the jar file from the [releases page](https://github.com/rileynull/GenZhouImporter/releases) and run it:
 
-```sh
+```
 java -jar genZhouImporter-0.1-SNAPSHOT.jar genzhouarchive archive_bot
 ```
 
@@ -27,12 +27,12 @@ Prerequisites: JDK >=1.8, Maven 3.
 
 Clone the repo and cd to the GenZhouImporter directory. Run:
 
-```sh
+```
 mvn compile
 mvn exec:java -Dexec.args="genzhouarchive archive_bot"
 ```
 
-(This will pull down dependencies from Maven Central so you must be connected to the internet during the compile step.
+(This will pull down dependencies from Maven Central so you must be connected to the internet during the compile step.)
 
 The output file `GenZhouArchive.sql` will be placed in your current working directory.
 
@@ -42,7 +42,7 @@ The output file `GenZhouArchive.sql` will be placed in your current working dire
 
 Copy `GenZhouArchive.sql` to the server running Postgres and run this:
 
-```sh
+```
 psql --dbname=lemmy --username=lemmy --file=GenZhouArchive.sql
 ```
 
@@ -52,7 +52,7 @@ psql --dbname=lemmy --username=lemmy --file=GenZhouArchive.sql
 
 Copy `GenZhouArchive.sql` to the server running Docker and run this:
 
-```sh
+```
 docker cp ./GenZhouArchive.sql $(docker ps -qf name=postgres):/var/lib/postgresql
 docker exec -it $(docker ps -qf name=postgres) psql --dbname=lemmy --username=lemmy --file=/var/lib/postgresql/GenZhouArchive.sql
 ```
