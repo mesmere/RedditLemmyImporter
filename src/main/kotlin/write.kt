@@ -68,6 +68,10 @@ object Writer {
             "VALUES (${lit(mktitle(post))}, ${lit(mkurl(post))}, ${lit(mkbody(post))}, user_id, comm_id, ${lit(post.created_utc)}) " +
             "RETURNING id INTO STRICT post_id;\n"
         )
+        out.append(
+            "INSERT INTO post_like(post_id, person_id, score) " +
+            "VALUES (post_id, user_id, ${post.score});\n"
+        )
 
         // Insert the comments.
         for (comment in comments) {
@@ -75,6 +79,10 @@ object Writer {
                 "INSERT INTO comment(creator_id, post_id, parent_id, content, published) " +
                 "VALUES (user_id, post_id, ${comment.parent_id}_id, ${lit(mkbody(comment))}, ${lit(comment.created_utc)}) " +
                 "RETURNING id INTO STRICT ${comment.name}_id;\n"
+            )
+            out.append(
+                "INSERT INTO comment_like(person_id, comment_id, post_id, score) " +
+                "VALUES (user_id, ${comment.name}_id, post_id, ${comment.score});\n"
             )
         }
 
