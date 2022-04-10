@@ -1,10 +1,11 @@
 import java.io.StringWriter
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.streams.toList
 
 object Writer {
     private const val TARGET_COMM_NAME = "genzhouarchive"
-    private const val TARGET_USER_NAME = "riley"
+    private const val TARGET_USER_NAME = "archive_bot"
 
     private fun lit(str: String?): String {
         return if (str == null) "NULL" else "'${str.replace("'", "''")}'"
@@ -19,15 +20,22 @@ object Writer {
     }
 
     private fun mkbody(post: Post): String {
-        return "Originally posted on r/GenZhou" +
+        return "`Originally posted on r/GenZhou" +
                 (if (post.author == null) "" else " by u/${post.author}") +
-                " (score ${"%+d".format(post.score)})  \n${post.selftext}"
+                " (score ${"%+d".format(post.score)})`  \n${post.selftext}"
     }
 
     private fun mkbody(comment: Comment): String {
         return "`Originally posted on r/GenZhou" +
                 (if (comment.author == null) "" else " by u/${comment.author}") +
                 " (score ${"%+d".format(comment.score)})`  \n${comment.body}"
+    }
+
+    private fun mktitle(post: Post): String {
+        // The schema allows us only 200 characters so we have to truncate, but Java's string representation doesn't
+        // count Unicode code POINTS like postgres does, it counts specifically UTF-16 code UNITS.
+        return if (post.title.codePointCount(0, post.title.length) <= 200) post.title
+            else post.title.codePoints().limit(197).toList().fold(StringBuilder(), StringBuilder::appendCodePoint).toString() + "..."
     }
 
     /**
@@ -52,16 +60,16 @@ object Writer {
 
         // Set IDs for the target community and user.
         out.append("SELECT id INTO STRICT comm_id FROM community WHERE name = '$TARGET_COMM_NAME';\n")
-        out.append("SELECT id INTO STRICT user_id FROM user_ WHERE name = '$TARGET_USER_NAME';\n")
+        out.append("SELECT id INTO STRICT user_id FROM person WHERE name = '$TARGET_USER_NAME';\n")
 
         // Insert the post.
         out.append(
             "INSERT INTO post(name, url, body, creator_id, community_id, published) " +
-            "VALUES (${lit(post.title)}, ${lit(mkurl(post))}, ${lit(mkbody(post))}, user_id, comm_id, ${lit(post.created_utc)}) " +
+            "VALUES (${lit(mktitle(post))}, ${lit(mkurl(post))}, ${lit(mkbody(post))}, user_id, comm_id, ${lit(post.created_utc)}) " +
             "RETURNING id INTO STRICT post_id;\n"
         )
 
-        // Insert the replies.
+        // Insert the comments.
         for (comment in comments) {
             out.append(
                 "INSERT INTO comment(creator_id, post_id, parent_id, content, published) " +
