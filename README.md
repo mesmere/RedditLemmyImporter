@@ -1,5 +1,3 @@
-# GenZhouImporter
-
 This project takes a JSON archive scraped from /r/GenZhou (before it was banned) and translates each post into a PL/pgSQL script which will insert the data into a Lemmy database for rehosting elsewhere.
 
 You can download the generated SQL script from the repo's [releases page](https://github.com/rileynull/GenZhouImporter/releases) and run it directly. It's hardcoded to add posts to c/genzhouarchive under the user u/archive_bot, both of which **must already exist** before running the script.
