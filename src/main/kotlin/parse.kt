@@ -42,8 +42,7 @@ object Parser {
     operator fun invoke(line: String): Pair<Post, List<Comment>> {
         val json = mapper.readTree(line)
         val post = mapper.convertValue<Post>(json["json"][0]["data"]["children"][0]["data"])
-        val childrenNode = json["json"][1]["data"]["children"]
-        val comments = if (childrenNode.isEmpty) listOf() else accumulateComments(childrenNode[0]["data"])
+        val comments = json["json"][1]["data"]["children"].flatMap { accumulateComments(it["data"]) }
 
         return Pair(post, comments)
     }
