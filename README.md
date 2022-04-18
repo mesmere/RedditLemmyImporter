@@ -5,7 +5,7 @@ You can download the generated SQL script from the repo's [releases page](https:
 If you want to modify the default community name or user name, you're going to have to run the code to generate the SQL script yourself. This is a good idea anyway since it's not wise to trust me to run arbitrary queries on your database, and in this case the easiest way to review them is to review the code that generates them.
 
 ## Screenshot
-  
+
 [![screenshot](https://user-images.githubusercontent.com/95945959/162605469-43d34fdf-3559-4017-81c8-486d9b280a1b.png)](https://user-images.githubusercontent.com/95945959/162605437-8cb64245-2048-4bf0-afd7-6de3a2d32a29.png)  
 (click/tap to expand)
 
@@ -16,6 +16,7 @@ Prerequisites: Java 8 or above
 Download the jar file from the [releases page](https://github.com/rileynull/GenZhouImporter/releases) and run it:
 
 ```
+# Args: community name, then user name
 java -jar genZhouImporter-0.2-SNAPSHOT.jar genzhouarchive archive_bot
 ```
 
@@ -53,8 +54,7 @@ psql --dbname=lemmy --username=lemmy --file=GenZhouArchive.sql
 Copy `GenZhouArchive.sql` to the server running Docker and run this:
 
 ```
-docker cp ./GenZhouArchive.sql $(docker ps -qf name=postgres):/var/lib/postgresql
-docker exec -it $(docker ps -qf name=postgres) psql --dbname=lemmy --username=lemmy --file=/var/lib/postgresql/GenZhouArchive.sql
+<GenZhouArchive.sql docker exec -i $(docker ps -qf name=postgres) psql --dbname=lemmy --username=lemmy -
 ```
 
 ## Credits
