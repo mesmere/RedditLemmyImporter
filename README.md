@@ -6,7 +6,7 @@ If you want to modify the default community name or user name, you're going to h
 
 ## Screenshot
 
-[![screenshot](https://user-images.githubusercontent.com/95945959/162605469-43d34fdf-3559-4017-81c8-486d9b280a1b.png)](https://user-images.githubusercontent.com/95945959/162605437-8cb64245-2048-4bf0-afd7-6de3a2d32a29.png)
+[![screenshot](https://user-images.githubusercontent.com/95945959/162605469-43d34fdf-3559-4017-81c8-486d9b280a1b.png)](https://user-images.githubusercontent.com/95945959/162605437-8cb64245-2048-4bf0-afd7-6de3a2d32a29.png)  
 (click/tap to expand)
 
 ## Generating the SQL script from the release binary
@@ -54,7 +54,7 @@ psql --dbname=lemmy --username=lemmy --file=GenZhouArchive.sql
 Copy `GenZhouArchive.sql` to the server running Docker and run this:
 
 ```
-cat GenZhouArchive.sql | docker exec -i $(docker ps -qf name=postgres) psql --dbname=lemmy --username=lemmy
+<GenZhouArchive.sql docker exec -i $(docker ps -qf name=postgres) psql --dbname=lemmy --username=lemmy -
 ```
 
 ## Credits
