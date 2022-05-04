@@ -19,12 +19,12 @@ class SQLWriter(val targetCommName: String, val targetUserName: String) {
 
     private fun mkbody(post: Post): String {
         return "`${if (post.author == "[deleted]") post.author else "u/${post.author}"}" +
-                " - from ${post.subreddit_name_prefixed}`  \n${post.selftext}"
+                " - originally from ${post.subreddit_name_prefixed}`  \n${post.selftext}"
     }
 
     private fun mkbody(comment: Comment): String {
         return "`${if (comment.author == "[deleted]") comment.author else "u/${comment.author}"}" +
-                " - from ${comment.subreddit_name_prefixed}`  \n${comment.body}"
+                " - originally from ${comment.subreddit_name_prefixed}`  \n${comment.body}"
     }
 
     private fun mktitle(post: Post): String {
