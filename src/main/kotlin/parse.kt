@@ -1,3 +1,5 @@
+package rileynull
+
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.util.StdConverter
@@ -7,7 +9,7 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.apache.commons.text.StringEscapeUtils
 
-object Parser {
+object DumpParser {
     class DeletedToNullConverter : StdConverter<String, String>() {
         override fun convert(str: String): String? {
             return if (str == "[deleted]") null else str

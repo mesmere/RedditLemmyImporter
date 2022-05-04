@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>riley</groupId>
+    <groupId>rileynull</groupId>
     <artifactId>genZhouImporter</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>GenZhou archive importer</name>
@@ -54,11 +54,10 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <configuration>
-                    <mainClass>MainKt</mainClass>
+                    <mainClass>rileynull.MainKt</mainClass>
                 </configuration>
             </plugin>
 
-            <!-- Shut up, I'm perfectly aware that uberjars suck. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -71,13 +70,14 @@
                         </goals>
                         <configuration>
                             <minimizeJar>true</minimizeJar>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>MainKt</mainClass>
+                                    <mainClass>rileynull.MainKt</mainClass>
+                                    <manifestEntries>
+                                        <Implementation-Version>${project.version}</Implementation-Version>
+                                    </manifestEntries>
                                 </transformer>
                             </transformers>
                             <filters>
@@ -121,6 +121,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.6.3</version>
         </dependency>
     </dependencies>
 

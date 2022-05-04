@@ -1,9 +1,11 @@
+package rileynull
+
 import java.io.StringWriter
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.streams.toList
 
-class Writer(val targetCommName: String, val targetUserName: String) {
+class SQLWriter(val targetCommName: String, val targetUserName: String) {
     private fun lit(str: String?): String {
         return if (str == null) "NULL" else "'${str.replace("'", "''")}'"
     }
@@ -40,7 +42,7 @@ class Writer(val targetCommName: String, val targetUserName: String) {
      *
      * Note that `comments` must be topologically sorted with respect to the reply tree structure so that the reply ID
      * variable for the parent will have been set by the time children are inserted. This happens naturally with a pre-order
-     * traversal as [Parser.accumulateComments] does, but you can't just supply an arbitrary list of comments.
+     * traversal as [DumpParser.accumulateComments] does, but you can't just supply an arbitrary list of comments.
      */
     operator fun invoke(post: Post, comments: List<Comment>, out: java.io.Writer) {
         out.append("DO \$RILEYESCAPE\$\n")
