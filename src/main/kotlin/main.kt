@@ -74,7 +74,7 @@ class App : Runnable {
         fileWriter.use {
             fileReader.forEachLine { line ->
                 val (post, comments) = DumpParser(line)
-                sqlWriter(post, comments, fileWriter)
+                fileWriter.append(sqlWriter(post, comments))
             }
         }
         System.err.println("Done!")

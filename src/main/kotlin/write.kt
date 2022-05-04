@@ -1,6 +1,5 @@
 package rileynull
 
-import java.io.StringWriter
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.streams.toList
@@ -42,52 +41,49 @@ class SQLWriter(val targetCommName: String, val targetUserName: String) {
      * variable for the parent will have been set by the time children are inserted. This happens naturally with a pre-order
      * traversal as [DumpParser.accumulateComments] does, but you can't just supply an arbitrary list of comments.
      */
-    operator fun invoke(post: Post, comments: List<Comment>, out: java.io.Writer) {
-        out.append("DO \$RILEYESCAPE\$\n")
+    operator fun invoke(post: Post, comments: List<Comment>): String {
+        val sb = StringBuilder()
 
-        out.append("DECLARE comm_id INTEGER;\n")
-        out.append("DECLARE user_id INTEGER;\n")
-        out.append("DECLARE post_id INTEGER;\n")
-        out.append("DECLARE ${post.name}_id CONSTANT INTEGER := NULL;\n") // Top-level comments should have a null parent.
+        sb.append("DECLARE comm_id INTEGER;\n")
+        sb.append("DECLARE user_id INTEGER;\n")
+        sb.append("DECLARE post_id INTEGER;\n")
+        sb.append("DECLARE ${post.name}_id CONSTANT INTEGER := NULL;\n") // Top-level comments should have a null parent.
         for (comment in comments) {
-            out.append("DECLARE ${comment.name}_id INTEGER;\n") // Other parent IDs will be set upon parent insertion.
+            sb.append("DECLARE ${comment.name}_id INTEGER;\n") // Other parent IDs will be set upon parent insertion.
         }
 
-        out.append("BEGIN\n")
+        sb.append("BEGIN\n")
 
         // Set IDs for the target community and user.
-        out.append("SELECT id INTO STRICT comm_id FROM community WHERE name = '$targetCommName';\n")
-        out.append("SELECT id INTO STRICT user_id FROM person WHERE name = '$targetUserName';\n")
+        sb.append("SELECT id INTO STRICT comm_id FROM community WHERE name = '$targetCommName';\n")
+        sb.append("SELECT id INTO STRICT user_id FROM person WHERE name = '$targetUserName';\n")
 
         // Insert the post.
-        out.append(
+        sb.append(
             "INSERT INTO post(name, url, body, creator_id, community_id, published) " +
             "VALUES (${lit(mktitle(post))}, ${lit(mkurl(post))}, ${lit(mkbody(post))}, user_id, comm_id, ${lit(post.created_utc)}) " +
             "RETURNING id INTO STRICT post_id;\n"
         )
-        out.append(
+        sb.append(
             "INSERT INTO post_like(post_id, person_id, score) " +
             "VALUES (post_id, user_id, ${post.score});\n"
         )
 
         // Insert the comments.
         for (comment in comments) {
-            out.append(
+            sb.append(
                 "INSERT INTO comment(creator_id, post_id, parent_id, content, published) " +
                 "VALUES (user_id, post_id, ${comment.parent_id}_id, ${lit(mkbody(comment))}, ${lit(comment.created_utc)}) " +
                 "RETURNING id INTO STRICT ${comment.name}_id;\n"
             )
-            out.append(
+            sb.append(
                 "INSERT INTO comment_like(person_id, comment_id, post_id, score) " +
                 "VALUES (user_id, ${comment.name}_id, post_id, ${comment.score});\n"
             )
         }
 
-        out.append("END\n")
-        out.append("\$RILEYESCAPE\$;\n\n")
-    }
+        sb.append("END\n")
 
-    operator fun invoke(post: Post, comments: List<Comment>): String {
-        return StringWriter().also { invoke(post, comments, it) }.toString()
+        return "DO ${lit(sb.toString())};\n\n"
     }
 }
