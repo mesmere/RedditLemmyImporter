@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>rileynull</groupId>
-    <artifactId>genZhouImporter</artifactId>
+    <artifactId>redditLemmyImporter</artifactId>
     <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>GenZhou archive importer</name>
+    <name>Reddit-Lemmy importer</name>
+    <description>Translates Reddit API dumps into SQL scripts to import post/comment data into Lemmy.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

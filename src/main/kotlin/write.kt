@@ -19,13 +19,13 @@ class SQLWriter(val targetCommName: String, val targetUserName: String) {
     }
 
     private fun mkbody(post: Post): String {
-        return "`Originally posted on r/GenZhou" +
+        return "`Originally posted on ${post.subreddit_name_prefixed}" +
                 (if (post.author == null) "" else " by u/${post.author}") +
                 " (score ${"%+d".format(post.score)})`  \n${post.selftext}"
     }
 
     private fun mkbody(comment: Comment): String {
-        return "`Originally posted on r/GenZhou" +
+        return "`Originally posted on ${comment.subreddit_name_prefixed}" +
                 (if (comment.author == null) "" else " by u/${comment.author}") +
                 " (score ${"%+d".format(comment.score)})`  \n${comment.body}"
     }

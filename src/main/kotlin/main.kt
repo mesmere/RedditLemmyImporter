@@ -18,6 +18,7 @@ data class Post(
     val score: Int,
     @JsonDeserialize(converter = DumpParser.HTMLEntityDecode::class)
     val selftext: String,
+    val subreddit_name_prefixed: String,
     val title: String,
     val url: String,
 )
@@ -31,17 +32,16 @@ data class Comment(
     val name: String,
     val parent_id: String,
     val score: Int,
+    val subreddit_name_prefixed: String,
 )
 
-@Command(name = "GenZhouImporter", versionProvider = App.ManifestVersionProvider::class, abbreviateSynopsis = true,
+@Command(name = "RedditLemmyImporter", versionProvider = App.ManifestVersionProvider::class, abbreviateSynopsis = true,
     mixinStandardHelpOptions = true, showDefaultValues = true, sortOptions = false, usageHelpAutoWidth = true)
 class App : Runnable {
-    @Option(names = ["-c", "--comm"], paramLabel = "name", defaultValue = "genzhouarchive",
-        description = ["Target community name."])
+    @Option(names = ["-c", "--comm"], paramLabel = "name", description = ["Target community name."], required = true)
     lateinit var commName: String
 
-    @Option(names = ["-u", "--user"], paramLabel = "name", defaultValue = "archive_bot",
-        description = ["Target user name."])
+    @Option(names = ["-u", "--user"], paramLabel = "name", description = ["Target user name."], required = true)
     lateinit var userName: String
 
     @Option(names = ["-o", "--output-file"], paramLabel = "file", converter = [DashFileTypeConverter::class],
