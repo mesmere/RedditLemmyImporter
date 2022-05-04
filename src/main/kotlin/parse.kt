@@ -1,5 +1,6 @@
 package rileynull
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.util.StdConverter
@@ -9,7 +10,7 @@ import com.fasterxml.jackson.module.kotlin.jsonMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.apache.commons.text.StringEscapeUtils
 
-object DumpParser {
+class DumpParser(val jsonPointer: JsonPointer?) {
     class HTMLEntityDecodingConverter : StdConverter<String, String>() {
         override fun convert(str: String): String {
             return StringEscapeUtils.unescapeHtml4(str)
@@ -45,9 +46,9 @@ object DumpParser {
      * Parse a line of JSON from the input (i.e. a single post and all of its associated reply comments).
      */
     operator fun invoke(line: String): Pair<Post, List<Comment>> {
-        val json = mapper.readTree(line)
-        val post = mapper.convertValue<Post>(json["json"][0]["data"]["children"][0]["data"])
-        val comments = json["json"][1]["data"]["children"].flatMap { accumulateComments(it["data"]) }
+        val json = mapper.readTree(line).at(jsonPointer ?: JsonPointer.empty())
+        val post = mapper.convertValue<Post>(json[0]["data"]["children"][0]["data"])
+        val comments = json[1]["data"]["children"].flatMap { accumulateComments(it["data"]) }
 
         // Lemmy will crash if we insert a malformed URL, so we want to crash here first.
         if (!post.is_self) java.net.URL(post.url)

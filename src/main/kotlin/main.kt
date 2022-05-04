@@ -1,5 +1,6 @@
 package rileynull
 
+import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import picocli.CommandLine
 import picocli.CommandLine.Command
@@ -34,21 +35,26 @@ data class Comment(
     val subreddit_name_prefixed: String,
 )
 
-@Command(name = "RedditLemmyImporter", versionProvider = App.ManifestVersionProvider::class, abbreviateSynopsis = true,
+@Command(name = "redditLemmyImporter", versionProvider = App.ManifestVersionProvider::class, abbreviateSynopsis = true,
     mixinStandardHelpOptions = true, showDefaultValues = true, sortOptions = false, usageHelpAutoWidth = true)
 class App : Runnable {
-    @Option(names = ["-c", "--comm"], paramLabel = "name", description = ["Target community name."], required = true)
+    @Option(names = ["-c", "--comm"], paramLabel = "name", description = ["Target community name. Required."], required = true)
     lateinit var commName: String
 
-    @Option(names = ["-u", "--user"], paramLabel = "name", description = ["Target user name."], required = true)
+    @Option(names = ["-u", "--user"], paramLabel = "name", description = ["Target user name. Required."], required = true)
     lateinit var userName: String
 
+    @Option(names = ["--json-pointer"], paramLabel = "pointer",
+        description = ["Locate the Reddit API response somewhere within the top-level object in each input line.",
+            "See the JSON Pointer specification (RFC 6901) for the required format."])
+    var jsonPointer: JsonPointer? = null
+
     @Option(names = ["-o", "--output-file"], paramLabel = "file", converter = [DashFileTypeConverter::class],
-        description = ["Output SQL file.", "  Prints to stdout if this option isn't specified."])
+        description = ["Output file. Prints to stdout if this option isn't specified."])
     var outfile: File? = null
 
-    @Parameters(index = "0", paramLabel = "dump_file", converter = [DashFileTypeConverter::class],
-        description = ["Path to the JSON dump from the Reddit API.", "  Specify - to read from stdin."])
+    @Parameters(index = "0", paramLabel = "dump", converter = [DashFileTypeConverter::class],
+        description = ["Path to the JSON dump file from the Reddit API. Required.", "Specify - to read from stdin."])
     var infile: File? = null
 
     class ManifestVersionProvider : CommandLine.IVersionProvider {
@@ -66,13 +72,14 @@ class App : Runnable {
 
     override fun run() {
         val sqlWriter = SQLWriter(targetCommName = commName, targetUserName = userName)
+        val dumpParser = DumpParser(jsonPointer)
         val fileWriter = outfile?.bufferedWriter() ?: System.out.bufferedWriter()
         val fileReader = infile?.bufferedReader() ?: System.`in`.bufferedReader()
 
         System.err.println("Running...")
         fileWriter.use {
             fileReader.forEachLine { line ->
-                val (post, comments) = DumpParser(line)
+                val (post, comments) = dumpParser(line)
                 fileWriter.append(sqlWriter(post, comments))
             }
         }
@@ -81,5 +88,7 @@ class App : Runnable {
 }
 
 fun main(args: Array<String>) {
-    exitProcess(CommandLine(App()).execute(*args))
+    exitProcess(CommandLine(App())
+        .registerConverter(JsonPointer::class.java, JsonPointer::compile)
+        .execute(*args))
 }
