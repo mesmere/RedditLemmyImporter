@@ -10,23 +10,22 @@ import java.time.ZonedDateTime
 import kotlin.system.exitProcess
 
 data class Post(
-    @JsonDeserialize(converter = DumpParser.DeletedToNullConverter::class)
-    val author: String?,
+    val author: String,
     val created_utc: ZonedDateTime,
     val is_self: Boolean,
     val name: String,
     val score: Int,
-    @JsonDeserialize(converter = DumpParser.HTMLEntityDecode::class)
+    @JsonDeserialize(converter = DumpParser.HTMLEntityDecodingConverter::class)
     val selftext: String,
     val subreddit_name_prefixed: String,
     val title: String,
+    @JsonDeserialize(converter = DumpParser.URLFixingConverter::class)
     val url: String,
 )
 
 data class Comment(
-    @JsonDeserialize(converter = DumpParser.DeletedToNullConverter::class)
-    val author: String?,
-    @JsonDeserialize(converter = DumpParser.HTMLEntityDecode::class)
+    val author: String,
+    @JsonDeserialize(converter = DumpParser.HTMLEntityDecodingConverter::class)
     val body: String,
     val created_utc: ZonedDateTime,
     val name: String,

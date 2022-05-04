@@ -10,15 +10,15 @@ import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.apache.commons.text.StringEscapeUtils
 
 object DumpParser {
-    class DeletedToNullConverter : StdConverter<String, String>() {
-        override fun convert(str: String): String? {
-            return if (str == "[deleted]") null else str
+    class HTMLEntityDecodingConverter : StdConverter<String, String>() {
+        override fun convert(str: String): String {
+            return StringEscapeUtils.unescapeHtml4(str)
         }
     }
 
-    class HTMLEntityDecode : StdConverter<String, String>() {
+    class URLFixingConverter : StdConverter<String, String>() {
         override fun convert(str: String): String {
-            return StringEscapeUtils.unescapeHtml4(str)
+            return if (str.startsWith("/r/")) "https://www.reddit.com$str" else str
         }
     }
 
@@ -48,6 +48,9 @@ object DumpParser {
         val json = mapper.readTree(line)
         val post = mapper.convertValue<Post>(json["json"][0]["data"]["children"][0]["data"])
         val comments = json["json"][1]["data"]["children"].flatMap { accumulateComments(it["data"]) }
+
+        // Lemmy will crash if we insert a malformed URL, so we want to crash here first.
+        if (!post.is_self) java.net.URL(post.url)
 
         return Pair(post, comments)
     }
