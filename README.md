@@ -1,8 +1,6 @@
 This project translates Reddit API responses into a PL/pgSQL script which loads the data into a [Lemmy](https://github.com/LemmyNet/lemmy/) database.
 
-In other words, this is a tool that ![takes](https://user-images.githubusercontent.com/95945959/166644376-d165623c-6d1c-4cb6-80e9-918040968446.png) posts/comments on Reddit and ![puts](https://user-images.githubusercontent.com/95945959/166644445-e29e1b37-51d2-4a81-ab4f-fb30efd39f10.png) them into Lemmy.
-
-🔥 Anti-Reddit Aktion 🔥
+In other words, this is a tool that ![takes](https://user-images.githubusercontent.com/95945959/166644376-d165623c-6d1c-4cb6-80e9-918040968446.png) Reddit posts/comments and ![puts](https://user-images.githubusercontent.com/95945959/166644445-e29e1b37-51d2-4a81-ab4f-fb30efd39f10.png) them into Lemmy.
 
 ## Screenshots
 
@@ -16,6 +14,7 @@ To get the JSON API response for a single post, you can call [the proper Reddit 
 
 ```
 HTML: https://www.reddit.com/r/GenZedong/comments/laucjl/china_usa/
+      https://www.reddit.com/r/GenZedong/comments/laucjl
 
 JSON: https://www.reddit.com/r/GenZedong/comments/laucjl/china_usa/.json?limit=10000
       https://www.reddit.com/r/GenZedong/comments/laucjl.json?limit=10000
@@ -45,7 +44,7 @@ mongoexport --uri="mongodb://localhost:27017/subredditArchiveDB" --collection=Ge
 Note that the script will bury the data we need within a top-level property named `json`. RedditLemmyImporter can handle this directly using the `--json-pointer` option. For example:
 
 ```
-java -jar genZhouImporter-0.3.jar -c genzhouarchive -u archive_bot -o import.sql --json-pointer=/json GenZhouArchive.json
+java -jar redditLemmyImporter-0.3.jar -c genzhouarchive -u archive_bot -o import.sql --json-pointer=/json GenZhouArchive.json
 ```
 
 ## Generating a SQL script using the release binary
@@ -55,7 +54,7 @@ Prerequisites: Java 8 or above
 Download the jar file from the [releases page](https://github.com/rileynull/RedditLemmyImporter/releases) and run it:
 
 ```
-java -jar genZhouImporter-0.3.jar -c genzhouarchive -u archive_bot -o import.sql dump.json
+java -jar redditLemmyImporter-0.3.jar -c genzhouarchive -u archive_bot -o import.sql dump.json
 ```
 
 In this case we're generating a PL/pgSQL script that will load the data from `dump.json` into the comm `genzhouarchive` under the user `archive_bot`. The script will be written to `import.sql`. Full command usage:
