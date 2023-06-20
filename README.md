@@ -37,7 +37,7 @@ https://www.reddit.com/r/GenZedong/comments/t9kbdm/women_of_genzedong_i_congratu
 
 ## Cloning an entire subreddit
 
-If you need a complete scraping solution, check out [this Python script](https://lemmygrad.ml/post/187006/comment/130292). It pulls posts into a local MongoDB database, which means you can run it on a cron to keep a local clone of posts as they're made. To export your `dump.json` try something like this:
+If you need a complete scraping solution, check out [this Python script](https://lemmygrad.ml/comment/130292). It pulls posts into a local MongoDB database, which means you can run it on a cron to keep a local clone of posts as they're made. To export your `dump.json` try something like this:
 
 ```
 mongoexport --uri="mongodb://localhost:27017/subredditArchiveDB" --collection=GenZedong --out=dump-wrapped.json
